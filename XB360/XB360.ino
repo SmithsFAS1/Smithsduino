@@ -142,10 +142,10 @@ void loop() {
 #else
     if (results.decode_type == 0x0F) {
      switch (IrReceiver.decodedIRData.decodedRawData) {
-        case 0x800f7428: Keyboard.press(''); break;   // KEY_OPEN
-        case 0x800ff428: Keyboard.press(''); break;   // KEY_OPEN
-        case 0x800ff464: Keyboard.press(''); break;  // XboxFancyButton
-        case 0x800f7464: Keyboard.press(''); break;  // XboxFancyButton
+        case 0x800f7428: Keyboard.press('!'); break;   // KEY_OPEN
+        case 0x800ff428: Keyboard.press('!'); break;   // KEY_OPEN
+        case 0x800ff464: Keyboard.press('@'); break;  // XboxFancyButton
+        case 0x800f7464: Keyboard.press('@'); break;  // XboxFancyButton
         case 0x800ff40c: Keyboard.press('s'); break;  // KEY_POWER
         case 0x800f740c: Keyboard.press('s'); break;  // KEY_POWER
         case 0x800ff419: Keyboard.press('x'); break;  // KEY_STOP
@@ -184,16 +184,16 @@ void loop() {
         case 0x800f7422: Keyboard.press(KEY_RETURN); break;       // KEY_OK
         case 0x800f7426: Keyboard.press(KEY_BACKSPACE); break;   // KEY_Y
         case 0x800ff426: Keyboard.press(KEY_BACKSPACE); break;   // KEY_Y
-        case 0x800ff468: Keyboard.press(''); break;   // KEY_X
-        case 0x800f7468: Keyboard.press(''); break;   // KEY_X
+        case 0x800ff468: Keyboard.press('#'); break;   // KEY_X
+        case 0x800f7468: Keyboard.press('#'); break;   // KEY_X
         case 0x800ff466: Keyboard.press('t'); break;   // KEY_A | Toggle Subtitles
         case 0x800f7466: Keyboard.press('t'); break;   // KEY_A | Toggle Subtitles
-        case 0x800ff425: Keyboard.press(''); break;   // KEY_B
-        case 0x800f7425: Keyboard.press(''); break;   // KEY_B
-        case 0x800ff412: Keyboard.press(''); break;    // KEY_CHANNELUP
-        case 0x800f7412: Keyboard.press(''); break;    // KEY_CHANNELUP
-        case 0x800ff413: Keyboard.press(''); break;    // KEY_CHANNELDOWN
-        case 0x800f7413: Keyboard.press(''); break;    // KEY_CHANNELDOWN
+        case 0x800ff425: Keyboard.press('$'); break;   // KEY_B
+        case 0x800f7425: Keyboard.press('$'); break;   // KEY_B
+        case 0x800ff412: Keyboard.press('%'); break;    // KEY_CHANNELUP
+        case 0x800f7412: Keyboard.press('%'); break;    // KEY_CHANNELUP
+        case 0x800ff413: Keyboard.press('^'); break;    // KEY_CHANNELDOWN
+        case 0x800f7413: Keyboard.press('^'); break;    // KEY_CHANNELDOWN
         case 0x800ff411: Keyboard.press('-'); break;       // KEY_VOLUMEDOWN
         case 0x800f7411: Keyboard.press('-'); break;       // KEY_VOLUMEDOWN
         case 0x800ff410: Keyboard.press('+'); break;       // KEY_VOLUMEUP
@@ -206,8 +206,8 @@ void loop() {
         case 0x800ff40b: Keyboard.press(KEY_RETURN); break;    // KEY_ENTER
         case 0x800f7417: Keyboard.press('m'); break;  // KEY_RECORD
         case 0x800ff417: Keyboard.press('m'); break;  // KEY_RECORD
-        case 0x800ff40a: Keyboard.press(''); break;  // KEY_CLEAR
-        case 0x800f740a: Keyboard.press(''); break;  // KEY_CLEAR
+        case 0x800ff40a: Keyboard.press('&'); break;  // KEY_CLEAR
+        case 0x800f740a: Keyboard.press('&'); break;  // KEY_CLEAR
         case 0x800f7401: Keyboard.press('1'); break;  // KEY_1
         case 0x800ff401: Keyboard.press('1'); break;  // KEY_1
         case 0x800f7402: Keyboard.press('2'); break;  // KEY_2
@@ -226,12 +226,12 @@ void loop() {
         case 0x800ff408: Keyboard.press('8'); break;  // KEY_8
         case 0x800f7409: Keyboard.press('9'); break;  // KEY_9
         case 0x800ff409: Keyboard.press('9'); break;  // KEY_9
-        case 0x800f741d: Keyboard.press(''); break;  // X_KEY_100
-        case 0x800ff41d: Keyboard.press(''); break;  // X_KEY_100
+        case 0x800f741d: Keyboard.press('*'); break;  // X_KEY_100
+        case 0x800ff41d: Keyboard.press('*'); break;  // X_KEY_100
         case 0x800f7400: Keyboard.press('0'); break;  // KEY_0
         case 0x800ff400: Keyboard.press('0'); break;  // KEY_0
-        case 0x800f741c: Keyboard.press(''); break;  // Reload
-        case 0x800ff41c: Keyboard.press(''); break;  // Reload
+        case 0x800f741c: Keyboard.press('('); break;  // Reload
+        case 0x800ff41c: Keyboard.press('('); break;  // Reload
 
         case 0xFFFFFFFF: break;  // Repeat
         default: break;
