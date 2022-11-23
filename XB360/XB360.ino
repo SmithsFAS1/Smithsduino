@@ -36,57 +36,73 @@ void loop() {
 #ifdef TESTMODE
     // In test mode, print the HEX code on the serial monitor
     if (results.decode_type == 0x0F) {
-      //Serial.println(IrReceiver.decodedIRData.address);
       switch (IrReceiver.decodedIRData.decodedRawData) {
-        case 0x800f7420: Serial.println('KEY_LEFT_ARROW'); break;   // Left
-        case 0x800ff420: Serial.println('KEY_LEFT_ARROW'); break;   // Left
-        case 0x800f7421: Serial.println('KEY_RIGHT_ARROW'); break;  // Right
-        case 0x800ff421: Serial.println('KEY_RIGHT_ARROW'); break;  // Right
-        case 0x800ff41e: Serial.println('KEY_UP_ARROW'); break;     // Up
-        case 0x800f741e: Serial.println('KEY_UP_ARROW'); break;     // Up
-        case 0x800f741f: Serial.println('KEY_DOWN_ARROW'); break;   // Down
-        case 0x800ff41f: Serial.println('KEY_DOWN_ARROW'); break;   // Down
-        case 0x800ff422: Serial.println('KEY_RETURN'); break;       // OK
-        case 0x800f7422: Serial.println('KEY_RETURN'); break;       // OK
-        case 0x800ff423: Serial.println('KEY_BACKSPACE'); break;    // Exit
-        case 0x800f7423: Serial.println('KEY_BACKSPACE'); break;    // Exit
-        case 0x800ff451: Serial.println('i'); break;              // Title
-        case 0x800f7451: Serial.println('i'); break;              // Title
-        case 0x800f7428: Serial.println('KEY_OPEN'); break;              // Menu
-        case 0x800ff428: Serial.println('KEY_OPEN'); break;              // Menu
-        case 0x800f7424: Serial.println('c'); break;              // Menu
-        case 0x800ff424: Serial.println('c'); break;              // Menu
-        case 0x800ff415: Serial.println('r'); break;              // Rewind
-        case 0x800f7415: Serial.println('r'); break;              // Rewind
-        case 0x800f7414: Serial.println('f'); break;              // Fast Forward
-        case 0x800ff414: Serial.println('f'); break;              // Fast Forward
-        case 0x800ff416: Serial.println('KEY_PLAY'); break;              // Play (Does play/pause)
-        case 0x800f7416: Serial.println('KEY_PLAY'); break;              // Play (Does play/pause)
-        case 0x800f7417: Serial.println('KEY_RECORD'); break;              // A
-        case 0x800ff417: Serial.println('KEY_RECORD'); break;              // A
-        case 0x800ff419: Serial.println('x'); break;              // Stop
-        case 0x800f7419: Serial.println('x'); break;              // Stop
-        case 0x800f7418: Serial.println('KEY_PAUSE'); break;  // Pause (Does play/pause)
-        case 0x800ff418: Serial.println('KEY_PAUSE'); break;  // Pause (Does play/pause)
-        //case 0xc80E8B04FLL :  Serial.println(''); break; // TV/AV
-        case 0x800ff410: Serial.println('+'); break;            // Vol Up
-        case 0x800f7410: Serial.println('+'); break;            // Vol Up
-        case 0x800ff411: Serial.println('-'); break;            // Vol Down
-        case 0x800f7411: Serial.println('-'); break;            // Vol Down
-        case 0x80E8926D: Serial.println('KEY_PAGE_UP'); break;    // Prog Up
-        case 0x80E852AD: Serial.println('KEY_PAGE_DOWN'); break;  // Prog Down
-        case 0x800ff40e: Serial.println('KEY_F8'); break;         // Mute
-        case 0x800f740e: Serial.println('KEY_F8'); break;         // Mute
-        case 0x80E8D827: Serial.println('t'); break;            // LCR (Toggle Subtitles)
-        case 0x80E8B847: Serial.println('w'); break;            // Button below mute (Mark Watched)
-        case 0x800f7426: Serial.println('t'); break;  // Button A (toggle subtitles)
-        case 0x800ff426: Serial.println('t'); break;  // Button A (toggle subtitles)
-        case 0x800ff425: Serial.println('B_BUTT'); break;  // Button A (toggle subtitles)
-        case 0x800f7425: Serial.println('B_BUTT'); break;  // Button A (toggle subtitles)
-        case 0x800ff466 :  Serial.println('A_BUTT'); break; // Button B
-        case 0x800f7466 :  Serial.println('A_BUTT'); break; // Button B
-        case 0x800ff468 :  Serial.println('X_BUTT'); break; // Button B
-        case 0x800f7468 :  Serial.println('X_BUTT'); break; // Button B
+        case 0x800f7428: Serial.println("KEY_OPEN"); break;              // Open
+        case 0x800ff428: Serial.println("KEY_OPEN"); break;              // Open
+        case 0x800ff464 : Serial.println("Fancy Button"); break; // 
+        case 0x800f7464 : Serial.println("Fancy Button"); break; // 
+        case 0x800ff40c: Serial.println("KEY_POWER"); break;  // Power
+        case 0x800f740c: Serial.println("KEY_POWER"); break;  // Power
+        case 0x800ff419: Serial.println("KEY_STOP"); break;              // Stop
+        case 0x800f7419: Serial.println("KEY_STOP"); break;              // Stop
+        case 0x800f7418: Serial.println("KEY_PAUSE"); break;  // Pause (Does play/pause)
+        case 0x800ff418: Serial.println("KEY_PAUSE"); break;  // Pause (Does play/pause)
+        case 0x800ff415: Serial.println("KEY_REWIND"); break;              // Rewind
+        case 0x800f7415: Serial.println("KEY_REWIND"); break;              // Rewind
+        case 0x800f7414: Serial.println("KEY_FASTFORWARD"); break;              // Fast Forward
+        case 0x800ff414: Serial.println("KEY_FASTFORWARD"); break;              // Fast Forward
+        case 0x800ff41b: Serial.println("KEY_PREVIOUS"); break;              // Prev
+        case 0x800f741b: Serial.println("KEY_PREVIOUS"); break;              // Prev 
+        case 0x800ff41a: Serial.println("KEY_NEXT"); break;              // Next
+        case 0x800f741a: Serial.println("KEY_NEXT"); break;              // Next     
+        case 0x800ff416: Serial.println("KEY_PLAY"); break;              // Play (Does play/pause)
+        case 0x800f7416: Serial.println("KEY_PLAY"); break;              // Play (Does play/pause)
+        case 0x800f744f: Serial.println("Display"); break;
+        case 0x800ff44f: Serial.println("Display"); break;
+        case 0x800ff451: Serial.println("KEY_TITLE"); break;              // Title
+        case 0x800f7451: Serial.println("KEY_TITLE"); break;              // Title
+        case 0x800f7424: Serial.println("KEY_MENU"); break;              // DVD Menu
+        case 0x800ff424: Serial.println("KEY_MENU"); break;              // DVD Menu
+        case 0x800ff423: Serial.println("KEY_BACKSPACE"); break;    // Back
+        case 0x800f7423: Serial.println("KEY_BACKSPACE"); break;    // Back
+        case 0x800f740f: Serial.println("KEY_INFO"); break;     // Info
+        case 0x800ff40f: Serial.println("KEY_INFO"); break;     // Info
+        case 0x800ff41e: Serial.println("KEY_UP_ARROW"); break;     // Up
+        case 0x800f741e: Serial.println("KEY_UP_ARROW"); break;     // Up
+        case 0x800f7420: Serial.println("KEY_LEFT_ARROW"); break;   // Left
+        case 0x800ff420: Serial.println("KEY_LEFT_ARROW"); break;   // Left
+        case 0x800f7421: Serial.println("KEY_RIGHT_ARROW"); break;  // Right
+        case 0x800ff421: Serial.println("KEY_RIGHT_ARROW"); break;  // Right
+        case 0x800f741f: Serial.println("KEY_DOWN_ARROW"); break;   // Down
+        case 0x800ff41f: Serial.println("KEY_DOWN_ARROW"); break;   // Down
+        case 0x800ff422: Serial.println("KEY_RETURN"); break;       // OK
+        case 0x800f7422: Serial.println("KEY_RETURN"); break;       // OK
+        case 0x800f7426: Serial.println("Y_BUTT"); break;  // Button Y
+        case 0x800ff426: Serial.println("Y_BUTT"); break;  // Button Y
+        case 0x800ff468 : Serial.println("X_BUTT"); break; // Button X
+        case 0x800f7468 : Serial.println("X_BUTT"); break; // Button X
+        case 0x800ff425: Serial.println("B_BUTT"); break;  // Button A (toggle subtitles)
+        case 0x800f7425: Serial.println("B_BUTT"); break;  // Button A (toggle subtitles)
+        case 0x800ff466 :  Serial.println("A_BUTT"); break; // Button B
+        case 0x800f7466 :  Serial.println("A_BUTT"); break; // Button B
+        case 0x800ff412: Serial.println("KEY_CHANNELUP"); break;
+        case 0x800f7412: Serial.println("KEY_CHANNELUP"); break;
+        case 0x800ff413: Serial.println("KEY_CHANNELDOWN"); break;
+        case 0x800f7413: Serial.println("KEY_CHANNELDOWN"); break;
+        case 0x800ff411: Serial.println("VOL_DOWN"); break;            // Vol Down
+        case 0x800f7411: Serial.println("VOL_DOWN"); break;            // Vol Down
+        case 0x800ff410: Serial.println("VOL_UP"); break;            // Vol Up
+        case 0x800f7410: Serial.println("VOL_UP"); break;            // Vol Up
+        case 0x800ff40e: Serial.println("KEY_MUTE"); break;         // Mute
+        case 0x800f740e: Serial.println("KEY_MUTE"); break;         // Mute        
+        case 0x800f740d: Serial.println("START"); break;
+        case 0x800ff40d: Serial.println("START"); break;
+        case 0x800f740b: Serial.println("KEY_ENTER"); break;              // Enter
+        case 0x800ff40b: Serial.println("KEY_ENTER"); break;              // Enter
+        case 0x800f7417: Serial.println("KEY_RECORD"); break;              // A
+        case 0x800ff417: Serial.println("KEY_RECORD"); break;              // A
+        case 0x800ff40a: Serial.println("KEY_CLEAR"); break;
+        case 0x800f740a: Serial.println("KEY_CLEAR"); break;
         case 0x800f7401: Serial.println('1'); break;  // 1
         case 0x800ff401: Serial.println('1'); break;  // 1
         case 0x800f7402: Serial.println('2'); break;  // 2
@@ -105,21 +121,13 @@ void loop() {
         case 0x800ff408: Serial.println('8'); break;  // 8
         case 0x800f7409: Serial.println('9'); break;  // 9
         case 0x800ff409: Serial.println('9'); break;  // 9
+        case 0x800f741d: Serial.println("X_KEY_100"); break;  // 100
+        case 0x800ff41d: Serial.println("X_KEY_100"); break;  // 100
         case 0x800f7400: Serial.println('0'); break;  // 0
         case 0x800ff400: Serial.println('0'); break;  // 0
-          //case 0x80E8F20D :  Serial.println(''); break; // 12
-        case 0x800ff41d: Serial.println('X_KEY_100'); break;
-        case 0x800f741d: Serial.println('X_KEY_100'); break;
-        case 0x800f740d: Serial.println('START'); break;
-        case 0x800ff40d: Serial.println('START'); break;
-        case 0x800f744f: Serial.println('Display'); break;
-        case 0x800ff44f: Serial.println('Display'); break;
-        case 0x800ff464 :  Serial.println('Fancy Button'); break; // 
-        case 0x800f7464 :  Serial.println('Fancy Button'); break; // 
-        case 0x800ff412: Serial.println('KEY_CHANNELUP'); break;
-        case 0x800f7412: Serial.println('KEY_CHANNELUP'); break;
-        case 0x800ff413: Serial.println('KEY_CHANNELDOWN'); break;
-        case 0x800f7413: Serial.println('KEY_CHANNELDOWN'); break;
+        case 0x800f741c: Serial.println("Reload"); break;  // Reload?
+        case 0x800ff41c: Serial.println("Reload"); break;  // Reload?  
+
         case 0xFFFFFFFF: break;  // Repeat
         default: break;
       }
