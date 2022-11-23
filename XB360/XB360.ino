@@ -1,5 +1,7 @@
 /*
 Map Remote to 21708 - Xbox 360 Remote
+by Smiths
+https://infosec.exchange/@quasirealsmiths
 */
 
 //TESTMODE sets output to Serial
@@ -8,8 +10,8 @@ Map Remote to 21708 - Xbox 360 Remote
 
 #include <IRremote.hpp>
 #include <Arduino.h>
-#define IR_RECEIVE_PIN 7
-#define DECODE_RC6
+#define RECV_PIN 7 // define your receive PIN here; I chose 7
+#define DECODE_RC6       // protocol for XB360 remote
 #include "USB.h"
 #include "USBHIDKeyboard.h"
 
@@ -19,7 +21,6 @@ void setup() {}
 void loop() {}
 #else
 USBHIDKeyboard Keyboard;
-int RECV_PIN = 7;
 decode_results results;
 void setup() {
   IrReceiver.begin(RECV_PIN);
