@@ -4,16 +4,22 @@ by Smiths
 https://infosec.exchange/@quasirealsmiths
 */
 
+#include <IRremote.hpp>
+#include <Arduino.h>
+#include "USB.h"
+#include "USBHIDKeyboard.h"
+
 //TESTMODE sets output to Serial
 //Clear flag for Keyboard Emulation mode
 //#define TESTMODE 
-//#define DECODE_RC6       // protocol for XB360 remote
 
-#include <IRremote.hpp>
-#include <Arduino.h>
-#define RECV_PIN 7 // define your receive PIN here; I chose 7
-#include "USB.h"
-#include "USBHIDKeyboard.h"
+//--------Other Variables------
+#define RECV_PIN    7       // define your receive PIN here; I chose 7
+#define DECODE_RC6       // protocol for XB360 remote
+#define USE_LED     1      // set to 1 to flash LED when button pressed / 0 to disable
+#define LED_PIN     15     // pin for LED
+#define KB_DELAY    175    // delay between keypresses in ms
+#define REPEAT_DELAY  120
 
 #if ARDUINO_USB_MODE
 #warning This sketch should be used when USB is in OTG mode
@@ -22,7 +28,11 @@ void loop() {}
 #else
 USBHIDKeyboard Keyboard;
 decode_results results;
+int prev_code = 0;
 void setup() {
+#ifdef USE_LED
+  pinMode(LED_PIN, OUTPUT);
+#endif
   IrReceiver.begin(RECV_PIN);
 #ifdef TESTMODE
   Serial.begin(115200);
@@ -35,9 +45,14 @@ void setup() {
 }
 IRAM_ATTR
 void loop() {
+  int kd = KB_DELAY;
   if (IrReceiver.decode(&results)) {
+#ifdef USE_LED
+    digitalWrite(LED_PIN, HIGH);
+#endif
 #ifdef TESTMODE
     // In test mode, print the HEX code on the serial monitor
+    //Serial.println(IrReceiver.decodedIRData.decodedRawData);
     if (results.decode_type == 0x0F) {
       switch (IrReceiver.decodedIRData.decodedRawData) {
         case 0x800f7428: Serial.println("KEY_OPEN"); break;       // Open
@@ -134,110 +149,122 @@ void loop() {
         case 0xFFFFFFFF: break;  // Repeat
         default: break;
       }
-      delay(200);
+      if (prev_code==IrReceiver.decodedIRData.decodedRawData){
+        kd = REPEAT_DELAY;
+      }
+      Serial.println(kd);      
+      delay(kd);
     }
 
 
 #else
     if (results.decode_type == 0x0F) {
      switch (IrReceiver.decodedIRData.decodedRawData) {
-        case 0x800f7428: Keyboard.press('!'); break;   // KEY_OPEN
-        case 0x800ff428: Keyboard.press('!'); break;   // KEY_OPEN
-        case 0x800ff464: Keyboard.press('@'); break;  // XboxFancyButton
-        case 0x800f7464: Keyboard.press('@'); break;  // XboxFancyButton
-        case 0x800ff40c: Keyboard.press('s'); break;  // KEY_POWER
-        case 0x800f740c: Keyboard.press('s'); break;  // KEY_POWER
-        case 0x800ff419: Keyboard.press('x'); break;  // KEY_STOP
-        case 0x800f7419: Keyboard.press('x'); break;  // KEY_STOP
-        case 0x800f7418: Keyboard.press(' '); break;  // KEY_PAUSE
-        case 0x800ff418: Keyboard.press(' '); break;  // KEY_PAUSE
-        case 0x800ff415: Keyboard.press('r'); break;  // KEY_REWIND
-        case 0x800f7415: Keyboard.press('r'); break;  // KEY_REWIND
-        case 0x800f7414: Keyboard.press('f'); break;  // KEY_FASTFORWARD
-        case 0x800ff414: Keyboard.press('f'); break;  // KEY_FASTFORWARD
-        case 0x800ff41b: Keyboard.press(KEY_PAGE_DOWN); break;   // KEY_PREVIOUS
-        case 0x800f741b: Keyboard.press(KEY_PAGE_DOWN); break;   // KEY_PREVIOUS 
-        case 0x800ff41a: Keyboard.press(KEY_PAGE_UP); break;   // KEY_NEXT
-        case 0x800f741a: Keyboard.press(KEY_PAGE_UP); break;   // KEY_NEXT     
-        case 0x800ff416: Keyboard.press(' '); break;  // KEY_PLAY
-        case 0x800f7416: Keyboard.press(' '); break;  // KEY_PLAY
-        case 0x800f744f: Keyboard.press('o'); break;    //Display | Player Process Info
-        case 0x800ff44f: Keyboard.press('o'); break;    //Display | Player Process Info
-        case 0x800ff451: Keyboard.press('m'); break;  // KEY_TITLE | Menu / OSD
-        case 0x800f7451: Keyboard.press('m'); break;  // KEY_TITLE | Menu / OSD
-        case 0x800f7424: Keyboard.press('z'); break;   // KEY_MENU | Display Info
-        case 0x800ff424: Keyboard.press('z'); break;   // KEY_MENU | Display Info
-        case 0x800ff423: Keyboard.press(KEY_BACKSPACE); break;    // KEY_BACK
-        case 0x800f7423: Keyboard.press(KEY_BACKSPACE); break;    // KEY_BACK
-        case 0x800f740f: Keyboard.press('i'); break;     // KEY_INFO
-        case 0x800ff40f: Keyboard.press('i'); break;     // KEY_INFO
-        case 0x800ff41e: Keyboard.press(KEY_UP_ARROW); break;     // UpArrow
-        case 0x800f741e: Keyboard.press(KEY_UP_ARROW); break;     // UpArrow
-        case 0x800f7420: Keyboard.press(KEY_LEFT_ARROW); break;   // LeftArrow
-        case 0x800ff420: Keyboard.press(KEY_LEFT_ARROW); break;   // LeftArrow
-        case 0x800f7421: Keyboard.press(KEY_RIGHT_ARROW); break;  // RightArrow
-        case 0x800ff421: Keyboard.press(KEY_RIGHT_ARROW); break;  // RightArrow
-        case 0x800f741f: Keyboard.press(KEY_DOWN_ARROW); break;   // DownArrow
-        case 0x800ff41f: Keyboard.press(KEY_DOWN_ARROW); break;   // DownArrow
-        case 0x800ff422: Keyboard.press(KEY_RETURN); break;       // KEY_OK
-        case 0x800f7422: Keyboard.press(KEY_RETURN); break;       // KEY_OK
-        case 0x800f7426: Keyboard.press(KEY_BACKSPACE); break;   // KEY_Y
-        case 0x800ff426: Keyboard.press(KEY_BACKSPACE); break;   // KEY_Y
-        case 0x800ff468: Keyboard.press('#'); break;   // KEY_X
-        case 0x800f7468: Keyboard.press('#'); break;   // KEY_X
-        case 0x800ff466: Keyboard.press('t'); break;   // KEY_A | Toggle Subtitles
-        case 0x800f7466: Keyboard.press('t'); break;   // KEY_A | Toggle Subtitles
-        case 0x800ff425: Keyboard.press('$'); break;   // KEY_B
-        case 0x800f7425: Keyboard.press('$'); break;   // KEY_B
-        case 0x800ff412: Keyboard.press('%'); break;    // KEY_CHANNELUP
-        case 0x800f7412: Keyboard.press('%'); break;    // KEY_CHANNELUP
-        case 0x800ff413: Keyboard.press('^'); break;    // KEY_CHANNELDOWN
-        case 0x800f7413: Keyboard.press('^'); break;    // KEY_CHANNELDOWN
-        case 0x800ff411: Keyboard.press('-'); break;       // KEY_VOLUMEDOWN
-        case 0x800f7411: Keyboard.press('-'); break;       // KEY_VOLUMEDOWN
-        case 0x800ff410: Keyboard.press('+'); break;       // KEY_VOLUMEUP
-        case 0x800f7410: Keyboard.press('+'); break;       // KEY_VOLUMEUP
-        case 0x800ff40e: Keyboard.press(KEY_F8); break;    // KEY_MUTE
-        case 0x800f740e: Keyboard.press(KEY_F8); break;    // KEY_MUTE        
-        case 0x800f740d: Keyboard.press(KEY_RETURN); break;        // Start
-        case 0x800ff40d: Keyboard.press(KEY_RETURN); break;        // Start
-        case 0x800f740b: Keyboard.press(KEY_RETURN); break;    // KEY_ENTER
-        case 0x800ff40b: Keyboard.press(KEY_RETURN); break;    // KEY_ENTER
-        case 0x800f7417: Keyboard.press('m'); break;  // KEY_RECORD
-        case 0x800ff417: Keyboard.press('m'); break;  // KEY_RECORD
-        case 0x800ff40a: Keyboard.press('&'); break;  // KEY_CLEAR
-        case 0x800f740a: Keyboard.press('&'); break;  // KEY_CLEAR
-        case 0x800f7401: Keyboard.press('1'); break;  // KEY_1
-        case 0x800ff401: Keyboard.press('1'); break;  // KEY_1
-        case 0x800f7402: Keyboard.press('2'); break;  // KEY_2
-        case 0x800ff402: Keyboard.press('2'); break;  // KEY_2
-        case 0x800f7403: Keyboard.press('3'); break;  // KEY_3
-        case 0x800ff403: Keyboard.press('3'); break;  // KEY_3
-        case 0x800f7404: Keyboard.press('4'); break;  // KEY_4
-        case 0x800ff404: Keyboard.press('4'); break;  // KEY_4
-        case 0x800f7405: Keyboard.press('5'); break;  // KEY_5
-        case 0x800ff405: Keyboard.press('5'); break;  // KEY_5
-        case 0x800f7406: Keyboard.press('6'); break;  // KEY_6
-        case 0x800ff406: Keyboard.press('6'); break;  // KEY_6
-        case 0x800f7407: Keyboard.press('7'); break;  // KEY_7
-        case 0x800ff407: Keyboard.press('7'); break;  // KEY_7
-        case 0x800f7408: Keyboard.press('8'); break;  // KEY_8
-        case 0x800ff408: Keyboard.press('8'); break;  // KEY_8
-        case 0x800f7409: Keyboard.press('9'); break;  // KEY_9
-        case 0x800ff409: Keyboard.press('9'); break;  // KEY_9
-        case 0x800f741d: Keyboard.press('*'); break;  // X_KEY_100
-        case 0x800ff41d: Keyboard.press('*'); break;  // X_KEY_100
-        case 0x800f7400: Keyboard.press('0'); break;  // KEY_0
-        case 0x800ff400: Keyboard.press('0'); break;  // KEY_0
-        case 0x800f741c: Keyboard.press('('); break;  // Reload
-        case 0x800ff41c: Keyboard.press('('); break;  // Reload
+        case 0x800f7428: Keyboard.write('!'); break;   // KEY_OPEN
+        case 0x800ff428: Keyboard.write('!'); break;   // KEY_OPEN
+        case 0x800ff464: Keyboard.write('@'); break;  // XboxFancyButton
+        case 0x800f7464: Keyboard.write('@'); break;  // XboxFancyButton
+        case 0x800ff40c: Keyboard.write('s'); break;  // KEY_POWER
+        case 0x800f740c: Keyboard.write('s'); break;  // KEY_POWER
+        case 0x800ff419: Keyboard.write('x'); break;  // KEY_STOP
+        case 0x800f7419: Keyboard.write('x'); break;  // KEY_STOP
+        case 0x800f7418: Keyboard.write(' '); break;  // KEY_PAUSE
+        case 0x800ff418: Keyboard.write(' '); break;  // KEY_PAUSE
+        case 0x800ff415: Keyboard.write('r'); break;  // KEY_REWIND
+        case 0x800f7415: Keyboard.write('r'); break;  // KEY_REWIND
+        case 0x800f7414: Keyboard.write('f'); break;  // KEY_FASTFORWARD
+        case 0x800ff414: Keyboard.write('f'); break;  // KEY_FASTFORWARD
+        case 0x800ff41b: Keyboard.write(KEY_PAGE_DOWN); break;   // KEY_PREVIOUS
+        case 0x800f741b: Keyboard.write(KEY_PAGE_DOWN); break;   // KEY_PREVIOUS 
+        case 0x800ff41a: Keyboard.write(KEY_PAGE_UP); break;   // KEY_NEXT
+        case 0x800f741a: Keyboard.write(KEY_PAGE_UP); break;   // KEY_NEXT     
+        case 0x800ff416: Keyboard.write(' '); break;  // KEY_PLAY
+        case 0x800f7416: Keyboard.write(' '); break;  // KEY_PLAY
+        case 0x800f744f: Keyboard.write('o'); break;    //Display | Player Process Info
+        case 0x800ff44f: Keyboard.write('o'); break;    //Display | Player Process Info
+        case 0x800ff451: Keyboard.write('m'); break;  // KEY_TITLE | Menu / OSD
+        case 0x800f7451: Keyboard.write('m'); break;  // KEY_TITLE | Menu / OSD
+        case 0x800f7424: Keyboard.write('z'); break;   // KEY_MENU | Display Info
+        case 0x800ff424: Keyboard.write('z'); break;   // KEY_MENU | Display Info
+        case 0x800ff423: Keyboard.write(KEY_BACKSPACE); break;    // KEY_BACK
+        case 0x800f7423: Keyboard.write(KEY_BACKSPACE); break;    // KEY_BACK
+        case 0x800f740f: Keyboard.write('i'); break;     // KEY_INFO
+        case 0x800ff40f: Keyboard.write('i'); break;     // KEY_INFO
+        case 0x800ff41e: Keyboard.write(KEY_UP_ARROW); break;     // UpArrow
+        case 0x800f741e: Keyboard.write(KEY_UP_ARROW); break;     // UpArrow
+        case 0x800f7420: Keyboard.write(KEY_LEFT_ARROW); break;   // LeftArrow
+        case 0x800ff420: Keyboard.write(KEY_LEFT_ARROW); break;   // LeftArrow
+        case 0x800f7421: Keyboard.write(KEY_RIGHT_ARROW); break;  // RightArrow
+        case 0x800ff421: Keyboard.write(KEY_RIGHT_ARROW); break;  // RightArrow
+        case 0x800f741f: Keyboard.write(KEY_DOWN_ARROW); break;   // DownArrow
+        case 0x800ff41f: Keyboard.write(KEY_DOWN_ARROW); break;   // DownArrow
+        case 0x800ff422: Keyboard.write(KEY_RETURN); break;       // KEY_OK
+        case 0x800f7422: Keyboard.write(KEY_RETURN); break;       // KEY_OK
+        case 0x800f7426: Keyboard.write(KEY_BACKSPACE); break;   // KEY_Y
+        case 0x800ff426: Keyboard.write(KEY_BACKSPACE); break;   // KEY_Y
+        case 0x800ff468: Keyboard.write('#'); break;   // KEY_X
+        case 0x800f7468: Keyboard.write('#'); break;   // KEY_X
+        case 0x800ff466: Keyboard.write('t'); break;   // KEY_A | Toggle Subtitles
+        case 0x800f7466: Keyboard.write('t'); break;   // KEY_A | Toggle Subtitles
+        case 0x800ff425: Keyboard.write('$'); break;   // KEY_B
+        case 0x800f7425: Keyboard.write('$'); break;   // KEY_B
+        case 0x800ff412: Keyboard.write('%'); break;    // KEY_CHANNELUP
+        case 0x800f7412: Keyboard.write('%'); break;    // KEY_CHANNELUP
+        case 0x800ff413: Keyboard.write('^'); break;    // KEY_CHANNELDOWN
+        case 0x800f7413: Keyboard.write('^'); break;    // KEY_CHANNELDOWN
+        case 0x800ff411: Keyboard.write('-'); break;       // KEY_VOLUMEDOWN
+        case 0x800f7411: Keyboard.write('-'); break;       // KEY_VOLUMEDOWN
+        case 0x800ff410: Keyboard.write('+'); break;       // KEY_VOLUMEUP
+        case 0x800f7410: Keyboard.write('+'); break;       // KEY_VOLUMEUP
+        case 0x800ff40e: Keyboard.write(KEY_F8); break;    // KEY_MUTE
+        case 0x800f740e: Keyboard.write(KEY_F8); break;    // KEY_MUTE        
+        case 0x800f740d: Keyboard.write(KEY_RETURN); break;        // Start
+        case 0x800ff40d: Keyboard.write(KEY_RETURN); break;        // Start
+        case 0x800f740b: Keyboard.write(KEY_RETURN); break;    // KEY_ENTER
+        case 0x800ff40b: Keyboard.write(KEY_RETURN); break;    // KEY_ENTER
+        case 0x800f7417: Keyboard.write('m'); break;  // KEY_RECORD
+        case 0x800ff417: Keyboard.write('m'); break;  // KEY_RECORD
+        case 0x800ff40a: Keyboard.write('&'); break;  // KEY_CLEAR
+        case 0x800f740a: Keyboard.write('&'); break;  // KEY_CLEAR
+        case 0x800f7401: Keyboard.write('1'); break;  // KEY_1
+        case 0x800ff401: Keyboard.write('1'); break;  // KEY_1
+        case 0x800f7402: Keyboard.write('2'); break;  // KEY_2
+        case 0x800ff402: Keyboard.write('2'); break;  // KEY_2
+        case 0x800f7403: Keyboard.write('3'); break;  // KEY_3
+        case 0x800ff403: Keyboard.write('3'); break;  // KEY_3
+        case 0x800f7404: Keyboard.write('4'); break;  // KEY_4
+        case 0x800ff404: Keyboard.write('4'); break;  // KEY_4
+        case 0x800f7405: Keyboard.write('5'); break;  // KEY_5
+        case 0x800ff405: Keyboard.write('5'); break;  // KEY_5
+        case 0x800f7406: Keyboard.write('6'); break;  // KEY_6
+        case 0x800ff406: Keyboard.write('6'); break;  // KEY_6
+        case 0x800f7407: Keyboard.write('7'); break;  // KEY_7
+        case 0x800ff407: Keyboard.write('7'); break;  // KEY_7
+        case 0x800f7408: Keyboard.write('8'); break;  // KEY_8
+        case 0x800ff408: Keyboard.write('8'); break;  // KEY_8
+        case 0x800f7409: Keyboard.write('9'); break;  // KEY_9
+        case 0x800ff409: Keyboard.write('9'); break;  // KEY_9
+        case 0x800f741d: Keyboard.write('*'); break;  // X_KEY_100
+        case 0x800ff41d: Keyboard.write('*'); break;  // X_KEY_100
+        case 0x800f7400: Keyboard.write('0'); break;  // KEY_0
+        case 0x800ff400: Keyboard.write('0'); break;  // KEY_0
+        case 0x800f741c: Keyboard.write('('); break;  // Reload
+        case 0x800ff41c: Keyboard.write('('); break;  // Reload
 
         case 0xFFFFFFFF: break;  // Repeat
         default: break;
       }
-      delay(220);
+      if (prev_code==IrReceiver.decodedIRData.decodedRawData){ //repeat key, no need for the delay
+        kd = REPEAT_DELAY;
+      }
+      delay(kd);
+      //Keyboard.release();
     }
   #endif
+#ifdef USE_LED
+  digitalWrite(LED_PIN, LOW);
+#endif
+  prev_code = IrReceiver.decodedIRData.decodedRawData; //set variable to current keypress to check for repeat
   IrReceiver.resume();  // Receive the next value  }
   }
 }
