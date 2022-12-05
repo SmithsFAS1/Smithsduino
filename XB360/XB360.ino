@@ -6,12 +6,12 @@ https://infosec.exchange/@quasirealsmiths
 
 //TESTMODE sets output to Serial
 //Clear flag for Keyboard Emulation mode
-#define TESTMODE 
+//#define TESTMODE 
+//#define DECODE_RC6       // protocol for XB360 remote
 
 #include <IRremote.hpp>
 #include <Arduino.h>
 #define RECV_PIN 7 // define your receive PIN here; I chose 7
-#define DECODE_RC6       // protocol for XB360 remote
 #include "USB.h"
 #include "USBHIDKeyboard.h"
 
@@ -24,7 +24,6 @@ USBHIDKeyboard Keyboard;
 decode_results results;
 void setup() {
   IrReceiver.begin(RECV_PIN);
-
 #ifdef TESTMODE
   Serial.begin(115200);
   while (!Serial);
