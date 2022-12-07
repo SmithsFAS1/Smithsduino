@@ -20,6 +20,7 @@ https://infosec.exchange/@quasirealsmiths
 #define LED_PIN     15     // pin for LED
 #define KB_DELAY    175    // delay between keypresses in ms
 #define REPEAT_DELAY  120
+#define KEY_MENU 0xED // Right-click button keyboard 
 
 #if ARDUINO_USB_MODE
 #warning This sketch should be used when USB is in OTG mode
@@ -162,8 +163,8 @@ void loop() {
      switch (IrReceiver.decodedIRData.decodedRawData) {
         case 0x800f7428: Keyboard.write('!'); break;   // KEY_OPEN
         case 0x800ff428: Keyboard.write('!'); break;   // KEY_OPEN
-        case 0x800ff464: Keyboard.write('@'); break;  // XboxFancyButton
-        case 0x800f7464: Keyboard.write('@'); break;  // XboxFancyButton
+        case 0x800ff464: Keyboard.write(KEY_MENU); break;  // XboxFancyButton | Context Menu - 3 dash button on Fire Remote
+        case 0x800f7464: Keyboard.write(KEY_MENU); break;  // XboxFancyButton | Context Menu - 3 dash button on Fire Remote
         case 0x800ff40c: Keyboard.write('s'); break;  // KEY_POWER
         case 0x800f740c: Keyboard.write('s'); break;  // KEY_POWER
         case 0x800ff419: Keyboard.write('x'); break;  // KEY_STOP
@@ -200,8 +201,8 @@ void loop() {
         case 0x800ff41f: Keyboard.write(KEY_DOWN_ARROW); break;   // DownArrow
         case 0x800ff422: Keyboard.write(KEY_RETURN); break;       // KEY_OK
         case 0x800f7422: Keyboard.write(KEY_RETURN); break;       // KEY_OK
-        case 0x800f7426: Keyboard.write(KEY_BACKSPACE); break;   // KEY_Y
-        case 0x800ff426: Keyboard.write(KEY_BACKSPACE); break;   // KEY_Y
+        case 0x800f7426: Keyboard.write(KEY_ESC); break;   // KEY_Y
+        case 0x800ff426: Keyboard.write(KEY_ESC); break;   // KEY_Y
         case 0x800ff468: Keyboard.write('#'); break;   // KEY_X
         case 0x800f7468: Keyboard.write('#'); break;   // KEY_X
         case 0x800ff466: Keyboard.write('t'); break;   // KEY_A | Toggle Subtitles
@@ -248,8 +249,8 @@ void loop() {
         case 0x800ff41d: Keyboard.write('*'); break;  // X_KEY_100
         case 0x800f7400: Keyboard.write('0'); break;  // KEY_0
         case 0x800ff400: Keyboard.write('0'); break;  // KEY_0
-        case 0x800f741c: Keyboard.write('('); break;  // Reload
-        case 0x800ff41c: Keyboard.write('('); break;  // Reload
+        case 0x800f741c: Keyboard.write(KEY_F12); break;  // Reload | Fire Stick Remote Home Button
+        case 0x800ff41c: Keyboard.write(KEY_F12); break;  // Reload | Fire Stick Home button
 
         case 0xFFFFFFFF: break;  // Repeat
         default: break;
