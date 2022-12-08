@@ -19,7 +19,6 @@ https://infosec.exchange/@quasirealsmiths
 #define USE_LED     1      // set to 1 to flash LED when button pressed / 0 to disable
 #define LED_PIN     15     // pin for LED
 #define KB_DELAY    175    // delay between keypresses in ms
-#define REPEAT_DELAY  120
 #define KEY_MENU 0xED // Right-click button keyboard 
 
 #if ARDUINO_USB_MODE
@@ -30,6 +29,10 @@ void loop() {}
 USBHIDKeyboard Keyboard;
 decode_results results;
 int prev_code = 0;
+int rptcount = 0;
+int prev_kd = KB_DELAY;
+int kd = KB_DELAY;
+
 void setup() {
 #ifdef USE_LED
   pinMode(LED_PIN, OUTPUT);
@@ -46,7 +49,7 @@ void setup() {
 }
 IRAM_ATTR
 void loop() {
-  int kd = KB_DELAY;
+  kd = prev_kd;
   if (IrReceiver.decode(&results)) {
 #ifdef USE_LED
     digitalWrite(LED_PIN, HIGH);
@@ -151,9 +154,21 @@ void loop() {
         default: break;
       }
       if (prev_code==IrReceiver.decodedIRData.decodedRawData){
-        kd = REPEAT_DELAY;
+        rptcount++;
+        if (rptcount % 5 == 0){
+          if (kd > 80){
+            kd-=75;
+          }else{
+            kd = prev_kd;
+          }
+        }
+      }else{
+        kd = KB_DELAY;
+        rptcount = 0;          
       }
-      Serial.println(kd);      
+      Serial.print(kd);
+      Serial.print(" | ");
+      Serial.println(rptcount);      
       delay(kd);
     }
 
@@ -161,10 +176,10 @@ void loop() {
 #else
     if (results.decode_type == 0x0F) {
      switch (IrReceiver.decodedIRData.decodedRawData) {
-        case 0x800f7428: Keyboard.write('!'); break;   // KEY_OPEN
-        case 0x800ff428: Keyboard.write('!'); break;   // KEY_OPEN
-        case 0x800ff464: Keyboard.write(KEY_MENU); break;  // XboxFancyButton | Context Menu - 3 dash button on Fire Remote
-        case 0x800f7464: Keyboard.write(KEY_MENU); break;  // XboxFancyButton | Context Menu - 3 dash button on Fire Remote
+        case 0x800f7428: Keyboard.write(KEY_F12); break;   // KEY_OPEN | Fire Stick Remote Home Button
+        case 0x800ff428: Keyboard.write(KEY_F12); break;   // KEY_OPEN | Fire Stick Remote Home Button
+        case 0x800ff464: Keyboard.write(KEY_MENU); break;  // XboxFancyButton | Context Menu - 3 dash button on Fire Remote | needed for Amazon Home GUI
+        case 0x800f7464: Keyboard.write(KEY_MENU); break;  // XboxFancyButton | Context Menu - 3 dash button on Fire Remote | needed for Amazon Home GUI
         case 0x800ff40c: Keyboard.write('s'); break;  // KEY_POWER
         case 0x800f740c: Keyboard.write('s'); break;  // KEY_POWER
         case 0x800ff419: Keyboard.write('x'); break;  // KEY_STOP
@@ -203,16 +218,16 @@ void loop() {
         case 0x800f7422: Keyboard.write(KEY_RETURN); break;       // KEY_OK
         case 0x800f7426: Keyboard.write(KEY_ESC); break;   // KEY_Y
         case 0x800ff426: Keyboard.write(KEY_ESC); break;   // KEY_Y
-        case 0x800ff468: Keyboard.write('#'); break;   // KEY_X
-        case 0x800f7468: Keyboard.write('#'); break;   // KEY_X
+        case 0x800ff468: Keyboard.write('c'); break;   // KEY_X | Context Menu
+        case 0x800f7468: Keyboard.write('c'); break;   // KEY_X | Context Menu
         case 0x800ff466: Keyboard.write('t'); break;   // KEY_A | Toggle Subtitles
         case 0x800f7466: Keyboard.write('t'); break;   // KEY_A | Toggle Subtitles
-        case 0x800ff425: Keyboard.write('$'); break;   // KEY_B
-        case 0x800f7425: Keyboard.write('$'); break;   // KEY_B
-        case 0x800ff412: Keyboard.write('%'); break;    // KEY_CHANNELUP
-        case 0x800f7412: Keyboard.write('%'); break;    // KEY_CHANNELUP
-        case 0x800ff413: Keyboard.write('^'); break;    // KEY_CHANNELDOWN
-        case 0x800f7413: Keyboard.write('^'); break;    // KEY_CHANNELDOWN
+        case 0x800ff425: Keyboard.write('$'); break;   // KEY_B <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800f7425: Keyboard.write('$'); break;   // KEY_B <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800ff412: Keyboard.write('%'); break;    // KEY_CHANNELUP <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800f7412: Keyboard.write('%'); break;    // KEY_CHANNELUP <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800ff413: Keyboard.write('^'); break;    // KEY_CHANNELDOWN <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800f7413: Keyboard.write('^'); break;    // KEY_CHANNELDOWN <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
         case 0x800ff411: Keyboard.write('-'); break;       // KEY_VOLUMEDOWN
         case 0x800f7411: Keyboard.write('-'); break;       // KEY_VOLUMEDOWN
         case 0x800ff410: Keyboard.write('+'); break;       // KEY_VOLUMEUP
@@ -225,8 +240,8 @@ void loop() {
         case 0x800ff40b: Keyboard.write(KEY_RETURN); break;    // KEY_ENTER
         case 0x800f7417: Keyboard.write('m'); break;  // KEY_RECORD
         case 0x800ff417: Keyboard.write('m'); break;  // KEY_RECORD
-        case 0x800ff40a: Keyboard.write('&'); break;  // KEY_CLEAR
-        case 0x800f740a: Keyboard.write('&'); break;  // KEY_CLEAR
+        case 0x800ff40a: Keyboard.write('&'); break;  // KEY_CLEAR <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800f740a: Keyboard.write('&'); break;  // KEY_CLEAR <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
         case 0x800f7401: Keyboard.write('1'); break;  // KEY_1
         case 0x800ff401: Keyboard.write('1'); break;  // KEY_1
         case 0x800f7402: Keyboard.write('2'); break;  // KEY_2
@@ -245,18 +260,28 @@ void loop() {
         case 0x800ff408: Keyboard.write('8'); break;  // KEY_8
         case 0x800f7409: Keyboard.write('9'); break;  // KEY_9
         case 0x800ff409: Keyboard.write('9'); break;  // KEY_9
-        case 0x800f741d: Keyboard.write('*'); break;  // X_KEY_100
-        case 0x800ff41d: Keyboard.write('*'); break;  // X_KEY_100
+        case 0x800f741d: Keyboard.write('*'); break;  // X_KEY_100 <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800ff41d: Keyboard.write('*'); break;  // X_KEY_100 <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
         case 0x800f7400: Keyboard.write('0'); break;  // KEY_0
         case 0x800ff400: Keyboard.write('0'); break;  // KEY_0
-        case 0x800f741c: Keyboard.write(KEY_F12); break;  // Reload | Fire Stick Remote Home Button
-        case 0x800ff41c: Keyboard.write(KEY_F12); break;  // Reload | Fire Stick Home button
+        case 0x800f741c: Keyboard.write('!'); break;  // Reload <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
+        case 0x800ff41c: Keyboard.write('!'); break;  // Reload <PLACEHOLDER TO MAP BUTTON AND ASSIGN IN KEYMAP>
 
         case 0xFFFFFFFF: break;  // Repeat
         default: break;
       }
-      if (prev_code==IrReceiver.decodedIRData.decodedRawData){ //repeat key, no need for the delay
-        kd = REPEAT_DELAY;
+      if (prev_code==IrReceiver.decodedIRData.decodedRawData){
+        rptcount++;
+        if (rptcount % 5 == 0){
+          if (kd > 80){
+            kd-=75;
+          }else{
+            kd = prev_kd;
+          }
+        }
+      }else{
+        kd = KB_DELAY;
+        rptcount = 0;          
       }
       delay(kd);
       //Keyboard.release();
@@ -266,6 +291,7 @@ void loop() {
   digitalWrite(LED_PIN, LOW);
 #endif
   prev_code = IrReceiver.decodedIRData.decodedRawData; //set variable to current keypress to check for repeat
+  prev_kd = kd;
   IrReceiver.resume();  // Receive the next value  }
   }
 }
