@@ -16,13 +16,13 @@ https://infosec.exchange/@quasirealsmiths
 //--------Other Variables------
 #define RECV_PIN 7     // define your receive PIN here; I chose 7
 #define DECODE_RC6     // protocol for XB360 remote
-#define USE_LED 0      // set to 1 to flash LED when button pressed / 0 to disable
+#define USE_LED false      // set to true to flash LED when button pressed / false to disable
 #define LED_PIN 15     // pin for LED
 #define KB_DELAY 175   // delay between keypresses in ms
 #define KEY_MENU 0xED  // Right-click button keyboard
-#define USE_OTA 1      // OTA Mode - define SSID/PW below - 0 to disable
+#define USE_OTA true      // OTA Mode - define SSID/PW below - false to disable
 
-#ifdef USE_OTA
+#if USE_OTA
 
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -31,8 +31,8 @@ https://infosec.exchange/@quasirealsmiths
 #include <Update.h>
 #include "OTA.h"
 const char* host = "ESP32_IR";
-const char* ssid = "<INSERT SSID>";
-const char* password = "<INSERT WIFI PASSWORD>";
+const char* ssid = "<ENTER SSID>";
+const char* password = "<ENTER WIFI PASS>";
 bool ledState = 0;
 WebServer server(80);
 
@@ -51,7 +51,7 @@ int prev_kd = KB_DELAY;
 int kd = KB_DELAY;
 
 void setup() {
-#ifdef USE_OTA
+#if USE_OTA
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -75,8 +75,14 @@ void setup() {
   });
   server.on("/admin", HTTP_GET, []() {
     server.sendHeader("Connection", "close");
-    String output;
-    output = "Sketch hash: " + ESP.getSketchMD5() + "<p>" + serverIndex;
+    String output = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>OTA Upload</title></head>";
+    output += serverIndex;
+    output += "<br><br><hr>";
+    output += "Sketch information<br>";
+    output += "   Sketch hash: " + ESP.getSketchMD5() + "<br>";
+    output += "   Sketch size: " + formatBytes(ESP.getSketchSize()) + "<br>";
+    output += "   Free space available: " + formatBytes(ESP.getFreeSketchSpace() - ESP.getSketchSize()) + "<br><hr>";
+    output += "</html>";
     server.send(200, "text/html", output);
   });
   /*handling uploading firmware file */
@@ -109,7 +115,7 @@ void setup() {
   server.begin();
 #endif
 
-#ifdef USE_LED
+#if USE_LED
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
   delay(500);
@@ -138,13 +144,13 @@ void setup() {
 }
 
 void loop() {
-#ifdef USE_OTA
+#if USE_OTA
   server.handleClient();
 #endif
 
   kd = prev_kd;
   if (IrReceiver.decode(&results)) {
-#ifdef USE_LED
+#if USE_LED
     digitalWrite(LED_PIN, HIGH);
 #endif
 #ifdef TESTMODE
@@ -245,7 +251,7 @@ void loop() {
         case 0xFFFFFFFF: break;  // Repeat
         default: break;
       }
-if (prev_code == IrReceiver.decodedIRData.decodedRawData) {
+      if (prev_code == IrReceiver.decodedIRData.decodedRawData) {
         rptcount++;
         if (rptcount % 3 == 0) {
           if (kd > 95) {
@@ -382,7 +388,7 @@ if (prev_code == IrReceiver.decodedIRData.decodedRawData) {
       //Keyboard.release();
     }
 #endif
-#ifdef USE_LED
+#if USE_LED
     digitalWrite(LED_PIN, LOW);
 #endif
     prev_code = IrReceiver.decodedIRData.decodedRawData;  //set variable to current keypress to check for repeat
