@@ -96,23 +96,6 @@ void setup() {
   server.on("/logged-out", HTTP_GET, []() {
     server.send(200, "text/html", logout_html);
   });
-  server.on("/admin", HTTP_GET, []() {
-    server.sendHeader("Connection", "close");
-    IPAddress LAN_IP = WiFi.localIP();
-    String output = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>OTA Upload " + String(host) + "</title></head>";
-    output += serverIndex;
-    output += "<br><br><hr>";
-    output += "<u>Network information</u><br>";
-    output += "   Host:        " + String(host) + "<br>";
-    output += "   IP address:  " + LAN_IP.toString() + "<br>";
-    output += "   MAC address: " + WiFi.macAddress() + "<br><hr>";
-    output += "<u>Sketch information</u><br>";
-    output += "   Sketch hash: " + ESP.getSketchMD5() + "<br>";
-    output += "   Sketch size: " + formatBytes(ESP.getSketchSize()) + "<br>";
-    output += "   Free space available: " + formatBytes(ESP.getFreeSketchSpace() - ESP.getSketchSize()) + "<br><hr>";
-    output += "</html>";
-    server.send(200, "text/html", output);
-  });
   /*handling uploading firmware file */
   server.on(
     "/update", HTTP_POST, []() {
