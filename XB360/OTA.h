@@ -40,10 +40,30 @@ const char* serverIndex =
   "return xhr;"
   "},"
   "success:function(d, s) {"
-  "$('#prg').html('SUCCESS, RESTARTING');setTimeout(function(){window.location.reload();}, 5000);"
+  "$('#prg').html('SUCCESS, RESTARTING');"
+  "setTimeout(function(){window.location.reload();"
+  "}, 5000);"
   "},"
   "error: function (a, b, c) {"
   "}"
   "});"
   "});"
+  "function logoutButton() {"
+  "var xhr = new XMLHttpRequest();"
+  "xhr.open('GET',window.location.protocol + '//log:out@' + window.location.hostname + '/logout', true);"
+  "xhr.send();"
+  "setTimeout(function(){ window.open('/logged-out','_self'); }, 1000);"
+  "}"
   "</script>";
+
+const char logout_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE HTML><html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <p>Logged out or <a href="/">return to homepage</a>.</p>
+  <p><strong>Note:</strong> close all web browser tabs to complete the logout process.</p>
+</body>
+</html>
+)rawliteral";

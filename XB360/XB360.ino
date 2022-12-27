@@ -16,11 +16,11 @@ https://infosec.exchange/@quasirealsmiths
 //--------Other Variables------
 #define RECV_PIN 7     // define your receive PIN here; I chose 7
 #define DECODE_RC6     // protocol for XB360 remote
-#define USE_LED false      // set to true to flash LED when button pressed / false to disable
+#define USE_LED false  // set to true to flash LED when button pressed / false to disable
 #define LED_PIN 15     // pin for LED
 #define KB_DELAY 175   // delay between keypresses in ms
 #define KEY_MENU 0xED  // Right-click button keyboard
-#define USE_OTA true      // OTA Mode - define SSID/PW below - false to disable
+#define USE_OTA true   // OTA Mode - define SSID/PW below - false to disable
 
 #if USE_OTA
 
@@ -30,9 +30,11 @@ https://infosec.exchange/@quasirealsmiths
 #include <ESPmDNS.h>
 #include <Update.h>
 #include "OTA.h"
-const char* host = "ESP32_IR";
-const char* ssid = "<ENTER SSID>";
-const char* password = "<ENTER WIFI PASS>";
+const char* host = "IR_S2_TEST";
+const char* ssid = "<INSERT WIFI SSID>";
+const char* password = "<INSERT WIFI PASSWORD>";
+const char* www_username = "admin"; //Username for OTA page, change if desired
+const char* www_password = "arduino"; //Password for OTA page, change if desired
 bool ledState = 0;
 WebServer server(80);
 
@@ -68,17 +70,43 @@ void setup() {
 
   /*return index page which is stored in serverIndex */
   server.on("/", HTTP_GET, []() {
+    if (!server.authenticate(www_username, www_password))
+      return server.requestAuthentication();
     server.sendHeader("Connection", "close");
-    String output;
-    output = "Hello there";
+    IPAddress LAN_IP = WiFi.localIP();
+    String output = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>OTA Upload " + String(host) + "</title></head>";
+    output += serverIndex;
+    output += "<br><br><hr>";
+    output += "<u>Network information</u><br>";
+    output += "   Host:        " + String(host) + "<br>";
+    output += "   IP address:  " + LAN_IP.toString() + "<br>";
+    output += "   MAC address: " + WiFi.macAddress() + "<br><hr>";
+    output += "<u>Sketch information</u><br>";
+    output += "   Sketch hash: " + ESP.getSketchMD5() + "<br>";
+    output += "   Sketch size: " + formatBytes(ESP.getSketchSize()) + "<br>";
+    output += "   Free space available: " + formatBytes(ESP.getFreeSketchSpace() - ESP.getSketchSize()) + "<br><hr>";
+    output += "<p><hr><div><button onclick=\"logoutButton()\">Logout</button></div>";
+    output += "</html>";
     server.send(200, "text/html", output);
+  });
+  server.on("/logout", HTTP_GET, []() {
+    server.send(401);
+  });
+
+  server.on("/logged-out", HTTP_GET, []() {
+    server.send(200, "text/html", logout_html);
   });
   server.on("/admin", HTTP_GET, []() {
     server.sendHeader("Connection", "close");
-    String output = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>OTA Upload</title></head>";
+    IPAddress LAN_IP = WiFi.localIP();
+    String output = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>OTA Upload " + String(host) + "</title></head>";
     output += serverIndex;
     output += "<br><br><hr>";
-    output += "Sketch information<br>";
+    output += "<u>Network information</u><br>";
+    output += "   Host:        " + String(host) + "<br>";
+    output += "   IP address:  " + LAN_IP.toString() + "<br>";
+    output += "   MAC address: " + WiFi.macAddress() + "<br><hr>";
+    output += "<u>Sketch information</u><br>";
     output += "   Sketch hash: " + ESP.getSketchMD5() + "<br>";
     output += "   Sketch size: " + formatBytes(ESP.getSketchSize()) + "<br>";
     output += "   Free space available: " + formatBytes(ESP.getFreeSketchSpace() - ESP.getSketchSize()) + "<br><hr>";
@@ -93,7 +121,7 @@ void setup() {
       ESP.restart();
     },
     []() {
-      HTTPUpload& upload = server.upload();
+      HTTPUpload &upload = server.upload();
       if (upload.status == UPLOAD_FILE_START) {
         Serial.printf("Update: %s\n", upload.filename.c_str());
         if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {  //start with max available size
@@ -253,10 +281,8 @@ void loop() {
       }
       if (prev_code == IrReceiver.decodedIRData.decodedRawData) {
         rptcount++;
-        if (rptcount % 3 == 0) {
+        if (rptcount % 2 == 0) {
           if (kd > 95) {
-            kd -= 90;
-          } else if (kd > 0) {
             kd = 10;
           }
         } else {
@@ -371,10 +397,8 @@ void loop() {
       }
       if (prev_code == IrReceiver.decodedIRData.decodedRawData) {
         rptcount++;
-        if (rptcount % 3 == 0) {
+        if (rptcount % 2 == 0) {
           if (kd > 95) {
-            kd -= 90;
-          } else if (kd > 0) {
             kd = 10;
           }
         } else {
