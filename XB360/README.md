@@ -8,4 +8,4 @@ A USB Y-Cable OTG adapter was used (https://www.amazon.com/Samsung-Galaxy-Amazon
 
 Uses the Arduino-IRremote library: https://github.com/Arduino-IRremote/Arduino-IRremote
 
-OTA updating is supported via http://<ARDUINO IP>/ using Basic Auth (username/password defined in the code)
+OTA updating is supported via http://[ARDUINO IP]/ using Basic Auth (username/password defined in the code)
