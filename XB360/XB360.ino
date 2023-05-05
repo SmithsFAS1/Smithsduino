@@ -31,10 +31,14 @@ https://infosec.exchange/@quasirealsmiths
 #include <Update.h>
 #include "OTA.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 const char* host = "IR_S2_TEST";
 =======
 const char* host = "<INSERT HOST NAME FOR DEVICE>";
 >>>>>>> 1eded0d (Revert "Updated for latest IRRemote Library")
+=======
+const char* host = "IR_S2_TEST";
+>>>>>>> ddecb4255a243001e55b7ce3585d2e5711a5020e
 const char* ssid = "<INSERT WIFI SSID>";
 const char* password = "<INSERT WIFI PASSWORD>";
 const char* www_username = "admin"; //Username for OTA page, change if desired
@@ -289,12 +293,17 @@ void loop() {
     if (results.decode_type == 0x0F) {
       switch (IrReceiver.decodedIRData.decodedRawData) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         case 0x800f7428: Keyboard.write(KEY_F12); break;          // KEY_OPEN | Fire Stick Remote Home Button
         case 0x800ff428: Keyboard.write(KEY_F12); break;          // KEY_OPEN | Fire Stick Remote Home Button
 =======
         case 0x800f7428: Keyboard.press(KEY_LEFT_GUI); delay(200); Keyboard.press(KEY_RETURN); Keyboard.releaseAll(); break; // KEY_OPEN | Fire Stick Remote Home Button (LWIN+ENTER)
         case 0x800ff428: Keyboard.press(KEY_LEFT_GUI); delay(200); Keyboard.press(KEY_RETURN); Keyboard.releaseAll(); break; // KEY_OPEN | Fire Stick Remote Home Button (LWIN+ENTER)
 >>>>>>> 1eded0d (Revert "Updated for latest IRRemote Library")
+=======
+        case 0x800f7428: Keyboard.write(KEY_F12); break;          // KEY_OPEN | Fire Stick Remote Home Button
+        case 0x800ff428: Keyboard.write(KEY_F12); break;          // KEY_OPEN | Fire Stick Remote Home Button
+>>>>>>> ddecb4255a243001e55b7ce3585d2e5711a5020e
         case 0x800ff464: Keyboard.write(KEY_MENU); break;         // XboxFancyButton | Context Menu - 3 dash button on Fire Remote | needed for Amazon Home GUI
         case 0x800f7464: Keyboard.write(KEY_MENU); break;         // XboxFancyButton | Context Menu - 3 dash button on Fire Remote | needed for Amazon Home GUI
         case 0x800ff40c: Keyboard.write('s'); break;              // KEY_POWER
