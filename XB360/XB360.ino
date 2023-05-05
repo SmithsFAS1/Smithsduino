@@ -1,7 +1,7 @@
 /*
 Map Remote to 21708 - Xbox 360 Remote
 by Smiths
-https://infosec.exchange/@quasirealsmiths
+https://beige.party/@quasirealsmiths
 */
 
 #include <IRremote.hpp>
@@ -10,17 +10,17 @@ https://infosec.exchange/@quasirealsmiths
 #include "USBHIDKeyboard.h"
 
 //TESTMODE sets output to Serial
-//Clear flag for Keyboard Emulation mode
+//Comment out for Keyboard Emulation mode
 //#define TESTMODE
 
 //--------Other Variables------
 #define RECV_PIN 7     // define your receive PIN here; I chose 7
 #define DECODE_RC6     // protocol for XB360 remote
-#define USE_LED false  // set to true to flash LED when button pressed / false to disable
+#define USE_LED true  // set to true to flash LED when button pressed / false to disable
 #define LED_PIN 15     // pin for LED
 #define KB_DELAY 175   // delay between keypresses in ms
 #define KEY_MENU 0xED  // Right-click button keyboard
-#define USE_OTA true   // OTA Mode - define SSID/PW below - false to disable
+#define USE_OTA false   // OTA Mode - define SSID/PW below - false to disable
 
 #if USE_OTA
 
@@ -30,11 +30,11 @@ https://infosec.exchange/@quasirealsmiths
 #include <ESPmDNS.h>
 #include <Update.h>
 #include "OTA.h"
-const char* host = "<INSERT HOST NAME FOR DEVICE>";
+const char* host = "HOST_NAME"; //host name on network
 const char* ssid = "<INSERT WIFI SSID>";
 const char* password = "<INSERT WIFI PASSWORD>";
-const char* www_username = "admin"; //Username for OTA page, change if desired
-const char* www_password = "arduino"; //Password for OTA page, change if desired
+const char* www_username = "admin";    //Username for OTA page, change if desired
+const char* www_password = "arduino";  //Password for OTA page, change if desired
 bool ledState = 0;
 WebServer server(80);
 
@@ -56,15 +56,18 @@ void setup() {
 #if USE_OTA
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+  int p = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    p++;
+    if (p > 20) {
+      ESP.restart();
+    }
   }
   if (!MDNS.begin(host)) {
     Serial.println("Error setting up MDNS responder!");
-    while (1) {
-      delay(1000);
-    }
+    ESP.restart();
   }
   Serial.println("mDNS responder started");
 
@@ -74,9 +77,11 @@ void setup() {
       return server.requestAuthentication();
     server.sendHeader("Connection", "close");
     IPAddress LAN_IP = WiFi.localIP();
-    String output = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>OTA Upload " + String(host) + "</title></head>";
-    output += serverIndex;
-    output += "<br><br><hr>";
+    String output = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>" + String(host) + " - IR Receiver / OTA Updater</title></head><body style=\"background-color:#e0e0e0;color:white;font-size:14px;font-family:Verdana,sans-serif;text-align:center;\">";
+    output += "<div style=\"width:50%;margin-left:auto;margin-right:auto;\"><div style=\"background-color:#8dd7d7;color:#000;border:1px solid #000;padding:6px;margin:10px;\">";
+    output += OTAindex;
+    output += "</div>";
+    output += "<div style=\"background-color:#000;color:#fff;border:1px solid #000;padding:6px;margin:10px;\">";
     output += "<u>Network information</u><br>";
     output += "   Host:        " + String(host) + "<br>";
     output += "   IP address:  " + LAN_IP.toString() + "<br>";
@@ -84,9 +89,12 @@ void setup() {
     output += "<u>Sketch information</u><br>";
     output += "   Sketch hash: " + ESP.getSketchMD5() + "<br>";
     output += "   Sketch size: " + formatBytes(ESP.getSketchSize()) + "<br>";
-    output += "   Free space available: " + formatBytes(ESP.getFreeSketchSpace() - ESP.getSketchSize()) + "<br><hr>";
-    output += "<p><hr><div><button onclick=\"logoutButton()\">Logout</button></div>";
-    output += "</html>";
+    output += "   Free space available: " + formatBytes(ESP.getFreeSketchSpace() - ESP.getSketchSize()) + "<br>";
+    output += "</div>";
+    output += "<div style=\"text-align:right;padding:6px;margin:10px;width:25%;margin-left:auto;margin-right:10px;\">";
+    output += logoutHTML;
+    output += "</div></div>";
+    output += "</body></html>";
     server.send(200, "text/html", output);
   });
   server.on("/logout", HTTP_GET, []() {
@@ -142,11 +150,10 @@ void setup() {
 #endif
   IrReceiver.begin(RECV_PIN);
 #ifdef TESTMODE
+  Serial.begin(115200);
   Serial.println("TEST DONE");
 
-  Serial.begin(115200);
-  while (!Serial)
-    ;
+  while (!Serial); //pause until serial monitor starts in testmode. comment out if wanted
   Serial.println("receiving?");
 #else
   Keyboard.begin();
@@ -160,13 +167,14 @@ void loop() {
 #endif
 
   kd = prev_kd;
-  if (IrReceiver.decode(&results)) {
+  if (IrReceiver.decode()) {
 #if USE_LED
     digitalWrite(LED_PIN, HIGH);
 #endif
 #ifdef TESTMODE
     // In test mode, print the HEX code on the serial monitor
-    if (results.decode_type == 0x0F) {
+    Serial.println(results.decode_type);
+    if (results.decode_type == 0x0F || results.decode_type == 0x12) {
       switch (IrReceiver.decodedIRData.decodedRawData) {
         case 0x800f7428: Serial.println("KEY_OPEN"); break;         // Open
         case 0x800ff428: Serial.println("KEY_OPEN"); break;         // Open
@@ -282,10 +290,20 @@ void loop() {
     }
     /*END TESTMODE*/
 #else /*NOT TESTMODE*/
-    if (results.decode_type == 0x0F) {
+    if (results.decode_type == 0x0F || results.decode_type == 0x12) {
       switch (IrReceiver.decodedIRData.decodedRawData) {
-        case 0x800f7428: Keyboard.press(KEY_LEFT_GUI); delay(200); Keyboard.press(KEY_RETURN); Keyboard.releaseAll(); break; // KEY_OPEN | Fire Stick Remote Home Button (LWIN+ENTER)
-        case 0x800ff428: Keyboard.press(KEY_LEFT_GUI); delay(200); Keyboard.press(KEY_RETURN); Keyboard.releaseAll(); break; // KEY_OPEN | Fire Stick Remote Home Button (LWIN+ENTER)
+        case 0x800f7428:
+          Keyboard.press(KEY_LEFT_GUI);
+          delay(200);
+          Keyboard.press(KEY_RETURN);
+          Keyboard.releaseAll();
+          break;  // KEY_OPEN | Fire Stick Remote Home Button (LWIN+ENTER)
+        case 0x800ff428:
+          Keyboard.press(KEY_LEFT_GUI);
+          delay(200);
+          Keyboard.press(KEY_RETURN);
+          Keyboard.releaseAll();
+          break;                                                  // KEY_OPEN | Fire Stick Remote Home Button (LWIN+ENTER)
         case 0x800ff464: Keyboard.write(KEY_MENU); break;         // XboxFancyButton | Context Menu - 3 dash button on Fire Remote | needed for Amazon Home GUI
         case 0x800f7464: Keyboard.write(KEY_MENU); break;         // XboxFancyButton | Context Menu - 3 dash button on Fire Remote | needed for Amazon Home GUI
         case 0x800ff40c: Keyboard.write('s'); break;              // KEY_POWER
