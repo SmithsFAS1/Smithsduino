@@ -18,7 +18,7 @@ https://beige.party/@quasirealsmiths
 #define DECODE_RC6     // protocol for XB360 remote
 #define USE_LED true  // set to true to flash LED when button pressed / false to disable
 #define LED_PIN 15     // pin for LED
-#define KB_DELAY 175   // delay between keypresses in ms
+#define KB_DELAY 175   // delay between keypresses in ms 
 #define KEY_MENU 0xED  // Right-click button keyboard
 #define USE_OTA true   // OTA Mode - define SSID/PW below - false to disable
 
